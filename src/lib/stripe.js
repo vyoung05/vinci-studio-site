@@ -19,21 +19,21 @@ export const PRODUCTS = {
   desktop: {
     name: 'Vinci Studio Desktop',
     productId: 'prod_U1l9w5IYg38imY',
-    priceId: 'price_desktop', // TODO: Replace with actual price_xxx from Stripe
+    priceId: 'price_1T3hdOL7PxGTC5wR4TaK4rIr',
     mode: 'payment',
     amount: 9900,
   },
   pro: {
     name: 'Vinci Studio Web Pro',
     productId: 'prod_U1lAMZb7s5r4Lj',
-    priceId: 'price_pro', // TODO: Replace with actual price_xxx from Stripe
+    priceId: 'price_1T3heYL7PxGTC5wRPplaVuFI',
     mode: 'subscription',
     amount: 999,
   },
   studio: {
     name: 'Vinci Studio Web Studio',
-    productId: 'prod_studio', // TODO: Get from Stripe
-    priceId: 'price_studio', // TODO: Replace with actual price_xxx from Stripe
+    productId: 'prod_U1lBuUCYJPNRtb',
+    priceId: 'price_1T3hfIL7PxGTC5wRxZ52QrKg',
     mode: 'subscription',
     amount: 2999,
   },
