@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 const systemRequirements = [
   { label: 'OS', value: 'Windows 10 or 11 (64-bit)' },
@@ -14,12 +14,12 @@ const installSteps = [
   {
     step: '1',
     title: 'Download the Installer',
-    desc: 'Click the download button above to get the latest .exe installer.',
+    desc: 'Click the download button above to get the latest .zip installer package.',
   },
   {
     step: '2',
-    title: 'Run the Installer',
-    desc: 'Double-click VinciStudioSetup.exe and follow the setup wizard. Installation takes under 2 minutes.',
+    title: 'Extract & Run',
+    desc: 'Unzip the download, then double-click VinciStudioSetup.exe and follow the setup wizard. Installation takes under 2 minutes.',
   },
   {
     step: '3',
@@ -34,12 +34,27 @@ const installSteps = [
   {
     step: '5',
     title: 'Start Creating',
-    desc: 'That\'s it! Open a new project and start editing. Check the built-in docs for tutorials and guides.',
+    desc: "That's it! Open a new project and start editing. Check the built-in docs for tutorials and guides.",
   },
 ];
 
 export default function Download() {
+  const [searchParams] = useSearchParams();
+  const isSuccess = searchParams.get('success') === 'true';
+  const sessionId = searchParams.get('session_id');
+  const licenseKey = searchParams.get('license');
+
   const [platform, setPlatform] = useState('windows');
+  const [email, setEmail] = useState('');
+  const [notifySubmitted, setNotifySubmitted] = useState(false);
+
+  const handleNotify = (e) => {
+    e.preventDefault();
+    if (email) {
+      // TODO: Store email in Supabase or send to mailing list
+      setNotifySubmitted(true);
+    }
+  };
 
   return (
     <section className="pt-32 pb-24 px-4 sm:px-6 lg:px-8">
@@ -50,6 +65,49 @@ export default function Download() {
       </div>
 
       <div className="max-w-4xl mx-auto">
+        {/* ═══ SUCCESS BANNER ═══ */}
+        {isSuccess && (
+          <div className="mb-10 rounded-2xl glass glow-cyan overflow-hidden">
+            <div className="h-1 bg-gradient-to-r from-green-400 to-accent-cyan" />
+            <div className="p-8 sm:p-10 text-center">
+              <div className="text-5xl mb-4">🎉</div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-text-primary mb-3">
+                Payment Successful!
+              </h2>
+              <p className="text-text-secondary text-lg mb-6">
+                Welcome to Vinci Studio Suite! Download the app below and start creating.
+              </p>
+
+              {licenseKey && (
+                <div className="glass rounded-xl p-6 max-w-md mx-auto mb-6">
+                  <p className="text-xs text-text-muted uppercase tracking-wider mb-2">Your License Key</p>
+                  <code className="text-xl sm:text-2xl font-mono text-accent-cyan font-bold tracking-wider block">
+                    {licenseKey}
+                  </code>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(licenseKey)}
+                    className="block mx-auto mt-4 px-4 py-2 rounded-lg text-sm text-text-secondary hover:text-accent-cyan hover:bg-accent-cyan/10 border border-border transition-all"
+                  >
+                    📋 Copy to Clipboard
+                  </button>
+                </div>
+              )}
+
+              <p className="text-text-muted text-sm">
+                {licenseKey
+                  ? 'Save this key — you\'ll need it when you launch the app for the first time.'
+                  : 'A confirmation email with your license key and receipt has been sent to your email address.'}
+              </p>
+
+              {sessionId && (
+                <p className="text-text-muted text-xs mt-3">
+                  Order reference: <code className="text-text-secondary font-mono">{sessionId.slice(0, 20)}…</code>
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-primary mb-4">
@@ -93,12 +151,12 @@ export default function Download() {
             <div className="p-8 sm:p-10 text-center">
               <div className="text-5xl mb-4">🪟</div>
               <h2 className="text-2xl font-bold text-text-primary mb-2">Vinci Studio Suite for Windows</h2>
-              <p className="text-text-secondary mb-1">Version 1.0.0 · 142 MB · Windows 10/11 (64-bit)</p>
+              <p className="text-text-secondary mb-1">Version 1.0.0-beta · Windows 10/11 (64-bit)</p>
               <p className="text-text-muted text-xs mb-8">Last updated: June 2025</p>
 
               <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
+                href="/downloads/VinciStudioSetup-v1.0.0-beta.zip"
+                download
                 className="inline-flex items-center gap-3 px-10 py-4 rounded-xl bg-gradient-to-r from-accent-cyan to-accent-cyan-dim text-bg-primary font-bold text-lg hover:glow-cyan-strong transition-all duration-300 hover:scale-105"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,16 +182,31 @@ export default function Download() {
                 We're working on a native macOS build. Enter your email to be notified when it's available.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                <input
-                  type="email"
-                  placeholder="you@email.com"
-                  className="flex-1 px-4 py-3 rounded-lg bg-bg-primary border border-border text-text-primary text-sm placeholder-text-muted focus:border-accent-cyan focus:outline-none transition-colors"
-                />
-                <button className="px-6 py-3 rounded-lg border border-accent-cyan/30 text-accent-cyan font-semibold text-sm hover:bg-accent-cyan/10 transition-all">
-                  Notify Me
-                </button>
-              </div>
+              {notifySubmitted ? (
+                <div className="flex items-center justify-center gap-2 text-green-400 text-sm">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  You'll be notified when macOS is available!
+                </div>
+              ) : (
+                <form onSubmit={handleNotify} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@email.com"
+                    required
+                    className="flex-1 px-4 py-3 rounded-lg bg-bg-primary border border-border text-text-primary text-sm placeholder-text-muted focus:border-accent-cyan focus:outline-none transition-colors"
+                  />
+                  <button
+                    type="submit"
+                    className="px-6 py-3 rounded-lg border border-accent-cyan/30 text-accent-cyan font-semibold text-sm hover:bg-accent-cyan/10 transition-all"
+                  >
+                    Notify Me
+                  </button>
+                </form>
+              )}
               <p className="text-xs text-text-muted mt-4">Expected: Q4 2025</p>
             </div>
           </div>
@@ -179,6 +252,24 @@ export default function Download() {
             </div>
           </div>
         </div>
+
+        {/* No license? CTA */}
+        {!isSuccess && (
+          <div className="rounded-2xl glass overflow-hidden mb-12">
+            <div className="p-8 text-center">
+              <h3 className="text-lg font-semibold text-text-primary mb-2">Don't have a license key yet?</h3>
+              <p className="text-sm text-text-secondary mb-4">
+                Purchase Vinci Studio Suite for $99 — one-time payment, lifetime access.
+              </p>
+              <Link
+                to="/buy"
+                className="inline-flex px-6 py-3 rounded-xl bg-gradient-to-r from-accent-cyan to-accent-cyan-dim text-bg-primary font-bold text-sm hover:glow-cyan-strong transition-all duration-300 hover:scale-105"
+              >
+                Buy Now — $99
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Help Section */}
         <div className="text-center">

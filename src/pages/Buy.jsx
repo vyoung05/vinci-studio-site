@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { getStripe, PRODUCTS } from '../lib/stripe';
 
 const desktopFeatures = [
   'Full desktop app — Windows (Mac coming soon)',
@@ -24,8 +25,9 @@ const webTiers = [
       'Community support',
       'Watermarked exports',
     ],
-    cta: 'Start Free',
+    cta: 'Get Started',
     accent: false,
+    productKey: null,
   },
   {
     name: 'Pro',
@@ -43,6 +45,7 @@ const webTiers = [
     cta: 'Subscribe to Pro',
     accent: true,
     popular: true,
+    productKey: 'pro',
   },
   {
     name: 'Studio',
@@ -62,72 +65,87 @@ const webTiers = [
     ],
     cta: 'Subscribe to Studio',
     accent: false,
+    productKey: 'studio',
   },
 ];
 
 export default function Buy() {
-  const [tab, setTab] = useState('desktop');
-  const [success, setSuccess] = useState(false);
-  const [processing, setProcessing] = useState(false);
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') || 'desktop';
+  const canceled = searchParams.get('canceled');
 
-  const handleCheckout = (product) => {
-    setProcessing(true);
-    // Simulate Stripe checkout
-    setTimeout(() => {
-      setProcessing(false);
-      setSuccess(true);
-    }, 2000);
+  const [tab, setTab] = useState(initialTab);
+  const [processing, setProcessing] = useState(null); // Track which product is processing
+  const [error, setError] = useState(null);
+  const [promoCode, setPromoCode] = useState('');
+  const [promoApplied, setPromoApplied] = useState(false);
+
+  // Known promo codes (for UI display — actual validation happens in Stripe)
+  const promoCodes = {
+    FRIEND100: { discount: '100%', label: 'Friend & Family — Free!' },
+    LAUNCH50: { discount: '50%', label: 'Launch Discount — 50% off' },
+    VINCI25: { discount: '25%', label: 'Vinci Discount — 25% off' },
   };
 
-  if (success) {
-    return (
-      <section className="pt-32 pb-24 px-4 sm:px-6 lg:px-8 min-h-screen">
-        <div className="max-w-2xl mx-auto text-center">
-          <div className="rounded-2xl glass glow-cyan p-10 sm:p-14">
-            <div className="text-6xl mb-6">🎉</div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-text-primary mb-4">
-              Purchase Complete!
-            </h1>
-            <p className="text-text-secondary text-lg mb-8">
-              Welcome to Vinci Studio Suite. Here's your license key:
-            </p>
+  const handlePromoCheck = () => {
+    const code = promoCode.toUpperCase().trim();
+    if (promoCodes[code]) {
+      setPromoApplied(true);
+      setError(null);
+    } else if (code) {
+      setPromoApplied(false);
+      setError('Invalid promo code. Try again or continue without one.');
+    }
+  };
 
-            <div className="glass rounded-xl p-6 mb-8">
-              <p className="text-xs text-text-muted uppercase tracking-wider mb-2">Your License Key</p>
-              <code className="text-xl sm:text-2xl font-mono text-accent-cyan font-bold tracking-wider">
-                VNCI-A7K9-M3X2-R8P4-W5J1
-              </code>
-              <button
-                onClick={() => navigator.clipboard.writeText('VNCI-A7K9-M3X2-R8P4-W5J1')}
-                className="block mx-auto mt-4 px-4 py-2 rounded-lg text-sm text-text-secondary hover:text-accent-cyan hover:bg-accent-cyan/10 border border-border transition-all"
-              >
-                📋 Copy to Clipboard
-              </button>
-            </div>
+  const handleCheckout = async (productKey) => {
+    setProcessing(productKey);
+    setError(null);
 
-            <p className="text-text-secondary text-sm mb-6">
-              A confirmation email with your license key and download link has been sent to your email.
-            </p>
+    const product = PRODUCTS[productKey];
+    if (!product) {
+      setError('Unknown product');
+      setProcessing(null);
+      return;
+    }
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                to="/download"
-                className="px-8 py-4 rounded-xl bg-gradient-to-r from-accent-cyan to-accent-cyan-dim text-bg-primary font-bold text-lg hover:glow-cyan-strong transition-all duration-300 hover:scale-105"
-              >
-                ⬇️ Download Now
-              </Link>
-              <Link
-                to="/"
-                className="px-8 py-4 rounded-xl border border-border text-text-primary font-semibold text-lg hover:border-accent-cyan/50 hover:bg-accent-cyan/5 transition-all duration-300"
-              >
-                Back to Home
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
+    try {
+      const response = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          priceId: product.priceId,
+          mode: product.mode,
+          successUrl: `${window.location.origin}/download?success=true&session_id={CHECKOUT_SESSION_ID}`,
+          cancelUrl: `${window.location.origin}/buy?canceled=true`,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+
+      // Redirect to Stripe Checkout
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        // Fallback: use Stripe.js redirect
+        const stripe = await getStripe();
+        const { error: stripeError } = await stripe.redirectToCheckout({
+          sessionId: data.sessionId,
+        });
+        if (stripeError) {
+          throw new Error(stripeError.message);
+        }
+      }
+    } catch (err) {
+      console.error('Checkout error:', err);
+      setError(err.message || 'Something went wrong. Please try again.');
+      setProcessing(null);
+    }
+  };
 
   return (
     <section className="pt-32 pb-24 px-4 sm:px-6 lg:px-8">
@@ -138,6 +156,22 @@ export default function Buy() {
       </div>
 
       <div className="max-w-7xl mx-auto">
+        {/* Canceled Banner */}
+        {canceled && (
+          <div className="max-w-2xl mx-auto mb-8 p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-center">
+            <p className="text-yellow-400 text-sm font-medium">
+              Checkout was canceled. No worries — you can try again whenever you're ready.
+            </p>
+          </div>
+        )}
+
+        {/* Error Banner */}
+        {error && (
+          <div className="max-w-2xl mx-auto mb-8 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-center">
+            <p className="text-red-400 text-sm font-medium">{error}</p>
+          </div>
+        )}
+
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-primary mb-4">
@@ -174,6 +208,41 @@ export default function Buy() {
           </div>
         </div>
 
+        {/* Promo Code Section */}
+        <div className="max-w-md mx-auto mb-10">
+          <div className="glass rounded-xl p-4">
+            <label className="block text-xs text-text-muted uppercase tracking-wider mb-2">
+              🏷️ Have a promo code?
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={promoCode}
+                onChange={(e) => { setPromoCode(e.target.value); setPromoApplied(false); }}
+                placeholder="Enter code (e.g. LAUNCH50)"
+                className="flex-1 px-4 py-2.5 rounded-lg bg-bg-primary border border-border text-text-primary text-sm placeholder-text-muted focus:border-accent-cyan focus:outline-none transition-colors font-mono uppercase"
+              />
+              <button
+                onClick={handlePromoCheck}
+                className="px-5 py-2.5 rounded-lg border border-accent-cyan/30 text-accent-cyan font-semibold text-sm hover:bg-accent-cyan/10 transition-all"
+              >
+                Apply
+              </button>
+            </div>
+            {promoApplied && promoCodes[promoCode.toUpperCase().trim()] && (
+              <div className="mt-2 flex items-center gap-2 text-green-400 text-xs">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                {promoCodes[promoCode.toUpperCase().trim()].label} — Discount will be applied at checkout
+              </div>
+            )}
+            <p className="text-xs text-text-muted mt-2">
+              Promo codes are applied during Stripe checkout. Enter your code and it will carry over.
+            </p>
+          </div>
+        </div>
+
         {/* Desktop Purchase */}
         {tab === 'desktop' && (
           <div className="max-w-lg mx-auto">
@@ -206,16 +275,16 @@ export default function Buy() {
 
                 <button
                   onClick={() => handleCheckout('desktop')}
-                  disabled={processing}
+                  disabled={processing === 'desktop'}
                   className="block w-full text-center py-4 rounded-xl bg-gradient-to-r from-accent-cyan to-accent-cyan-dim text-bg-primary font-bold text-lg hover:glow-cyan-strong transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {processing ? (
+                  {processing === 'desktop' ? (
                     <span className="inline-flex items-center gap-2">
                       <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
-                      Processing…
+                      Redirecting to Checkout…
                     </span>
                   ) : (
                     'Buy Now — $99'
@@ -273,17 +342,38 @@ export default function Buy() {
                     ))}
                   </ul>
 
-                  <button
-                    onClick={() => handleCheckout(tier.name)}
-                    disabled={processing}
-                    className={`block w-full text-center py-3 rounded-xl font-semibold text-sm transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 ${
-                      tier.accent
-                        ? 'bg-gradient-to-r from-accent-cyan to-accent-cyan-dim text-bg-primary hover:glow-cyan-strong'
-                        : 'border border-border text-text-primary hover:border-accent-cyan/50 hover:bg-accent-cyan/5'
-                    }`}
-                  >
-                    {tier.cta}
-                  </button>
+                  {tier.productKey ? (
+                    <button
+                      onClick={() => handleCheckout(tier.productKey)}
+                      disabled={processing === tier.productKey}
+                      className={`block w-full text-center py-3 rounded-xl font-semibold text-sm transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed ${
+                        tier.accent
+                          ? 'bg-gradient-to-r from-accent-cyan to-accent-cyan-dim text-bg-primary hover:glow-cyan-strong'
+                          : 'border border-border text-text-primary hover:border-accent-cyan/50 hover:bg-accent-cyan/5'
+                      }`}
+                    >
+                      {processing === tier.productKey ? (
+                        <span className="inline-flex items-center justify-center gap-2">
+                          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                          </svg>
+                          Redirecting…
+                        </span>
+                      ) : (
+                        tier.cta
+                      )}
+                    </button>
+                  ) : (
+                    <a
+                      href="https://app.vincistudios.org"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-full text-center py-3 rounded-xl font-semibold text-sm border border-border text-text-primary hover:border-accent-cyan/50 hover:bg-accent-cyan/5 transition-all duration-300 hover:scale-[1.02]"
+                    >
+                      {tier.cta}
+                    </a>
+                  )}
                 </div>
               </div>
             ))}

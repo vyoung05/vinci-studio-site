@@ -1,18 +1,41 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const links = [
-    { to: '/', label: 'Home' },
+    { to: '/', label: 'Home', hash: false },
     { to: '/#features', label: 'Features', hash: true },
     { to: '/#pricing', label: 'Pricing', hash: true },
-    { to: '/download', label: 'Download' },
+    { to: '/download', label: 'Download', hash: false },
   ];
 
-  const isActive = (to) => location.pathname === to;
+  const isActive = (to) => {
+    if (to === '/') return location.pathname === '/';
+    return location.pathname === to;
+  };
+
+  const handleNavClick = (link) => {
+    setMobileOpen(false);
+    if (link.hash) {
+      const hashId = link.to.split('#')[1];
+      if (location.pathname === '/') {
+        // Already on home page — scroll to section
+        const el = document.getElementById(hashId);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        // Navigate to home, then scroll after render
+        navigate('/');
+        setTimeout(() => {
+          const el = document.getElementById(hashId);
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-strong">
@@ -30,19 +53,29 @@ export default function Navbar() {
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-1">
-            {links.map((link) => (
-              <a
-                key={link.to}
-                href={link.to}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  isActive(link.to)
-                    ? 'text-accent-cyan bg-accent-cyan/10'
-                    : 'text-text-secondary hover:text-text-primary hover:bg-white/5'
-                }`}
-              >
-                {link.label}
-              </a>
-            ))}
+            {links.map((link) =>
+              link.hash ? (
+                <button
+                  key={link.to}
+                  onClick={() => handleNavClick(link)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-text-secondary hover:text-text-primary hover:bg-white/5`}
+                >
+                  {link.label}
+                </button>
+              ) : (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    isActive(link.to)
+                      ? 'text-accent-cyan bg-accent-cyan/10'
+                      : 'text-text-secondary hover:text-text-primary hover:bg-white/5'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              )
+            )}
           </div>
 
           {/* CTA */}
@@ -74,16 +107,26 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {mobileOpen && (
         <div className="md:hidden glass-strong border-t border-border px-4 py-3 space-y-1">
-          {links.map((link) => (
-            <a
-              key={link.to}
-              href={link.to}
-              onClick={() => setMobileOpen(false)}
-              className="block px-4 py-2 rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-white/5"
-            >
-              {link.label}
-            </a>
-          ))}
+          {links.map((link) =>
+            link.hash ? (
+              <button
+                key={link.to}
+                onClick={() => handleNavClick(link)}
+                className="block w-full text-left px-4 py-2 rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-white/5"
+              >
+                {link.label}
+              </button>
+            ) : (
+              <Link
+                key={link.to}
+                to={link.to}
+                onClick={() => setMobileOpen(false)}
+                className="block px-4 py-2 rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-white/5"
+              >
+                {link.label}
+              </Link>
+            )
+          )}
           <Link
             to="/buy"
             onClick={() => setMobileOpen(false)}

@@ -1,26 +1,41 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 export default function Footer() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const scrollToSection = (hashId) => {
+    if (location.pathname === '/') {
+      const el = document.getElementById(hashId);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate('/');
+      setTimeout(() => {
+        const el = document.getElementById(hashId);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  };
+
   return (
     <footer className="border-t border-border bg-bg-secondary/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
+            <Link to="/" className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-cyan to-accent-magenta flex items-center justify-center font-extrabold text-bg-primary text-sm">
                 V
               </div>
               <span className="text-lg font-bold text-text-primary">
                 Vinci <span className="text-accent-cyan">Studio</span>
               </span>
-            </div>
+            </Link>
             <p className="text-text-secondary text-sm max-w-md leading-relaxed">
               The AI-powered desktop video editor you actually own. No subscriptions, no vendor lock-in.
               Bring your own API keys and create without limits.
             </p>
             <div className="flex gap-4 mt-4">
-              {/* Social placeholders */}
               {['Twitter', 'YouTube', 'Discord', 'GitHub'].map((platform) => (
                 <a
                   key={platform}
@@ -38,10 +53,35 @@ export default function Footer() {
           <div>
             <h4 className="text-sm font-semibold text-text-primary mb-4 uppercase tracking-wider">Product</h4>
             <ul className="space-y-2">
-              <li><a href="/#features" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">Features</a></li>
-              <li><a href="/#pricing" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">Pricing</a></li>
-              <li><Link to="/download" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">Download</Link></li>
-              <li><a href="/#faq" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">FAQ</a></li>
+              <li>
+                <button
+                  onClick={() => scrollToSection('features')}
+                  className="text-sm text-text-secondary hover:text-accent-cyan transition-colors"
+                >
+                  Features
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => scrollToSection('pricing')}
+                  className="text-sm text-text-secondary hover:text-accent-cyan transition-colors"
+                >
+                  Pricing
+                </button>
+              </li>
+              <li>
+                <Link to="/download" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">
+                  Download
+                </Link>
+              </li>
+              <li>
+                <button
+                  onClick={() => scrollToSection('faq')}
+                  className="text-sm text-text-secondary hover:text-accent-cyan transition-colors"
+                >
+                  FAQ
+                </button>
+              </li>
             </ul>
           </div>
 
