@@ -138,3 +138,10 @@ body {
   background: rgba(0, 255, 255, 0.3);
   color: #ffffff;
 }
+
+/* ── Ensure centering works on all viewports ── */
+#root {
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+}
