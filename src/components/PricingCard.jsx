@@ -107,7 +107,7 @@ export default function PricingCard() {
                   ))}
                 </ul>
                 <Link
-                  to="/buy?tab=desktop"
+                  to="/studio/buy?tab=desktop"
                   className="block w-full text-center py-4 rounded-xl bg-gradient-to-r from-accent-cyan to-accent-cyan-dim text-bg-primary font-bold text-lg hover:glow-cyan-strong transition-all duration-300 hover:scale-[1.02]"
                 >
                   Get Vinci Studio — $99
@@ -156,7 +156,7 @@ export default function PricingCard() {
                     ))}
                   </ul>
                   <Link
-                    to={`/buy?tab=web`}
+                    to={`/studio/buy?tab=web`}
                     className={`block w-full text-center py-3 rounded-xl font-semibold text-sm transition-all duration-300 hover:scale-[1.02] ${
                       tier.highlight
                         ? 'bg-gradient-to-r from-accent-cyan to-accent-cyan-dim text-bg-primary hover:glow-cyan-strong'

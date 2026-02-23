@@ -4,12 +4,12 @@ export default function Footer() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const scrollToSection = (hashId) => {
-    if (location.pathname === '/') {
+  const scrollToSection = (basePath, hashId) => {
+    if (location.pathname === basePath) {
       const el = document.getElementById(hashId);
       if (el) el.scrollIntoView({ behavior: 'smooth' });
     } else {
-      navigate('/');
+      navigate(basePath);
       setTimeout(() => {
         const el = document.getElementById(hashId);
         if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -28,12 +28,11 @@ export default function Footer() {
                 V
               </div>
               <span className="text-lg font-bold text-text-primary">
-                Vinci <span className="text-accent-cyan">Studio</span>
+                Vinci <span className="text-accent-cyan">Studios</span>
               </span>
             </Link>
             <p className="text-text-secondary text-sm max-w-md leading-relaxed">
-              The AI-powered desktop video editor you actually own. No subscriptions, no vendor lock-in.
-              Bring your own API keys and create without limits.
+              Creative media company building tools, content, and experiences for the next generation of creators. Based in Miami, FL.
             </p>
             <div className="flex gap-4 mt-4">
               {['Twitter', 'YouTube', 'Discord', 'GitHub'].map((platform) => (
@@ -49,38 +48,34 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Product */}
+          {/* Products */}
           <div>
-            <h4 className="text-sm font-semibold text-text-primary mb-4 uppercase tracking-wider">Product</h4>
+            <h4 className="text-sm font-semibold text-text-primary mb-4 uppercase tracking-wider">Products</h4>
             <ul className="space-y-2">
               <li>
-                <button
-                  onClick={() => scrollToSection('features')}
-                  className="text-sm text-text-secondary hover:text-accent-cyan transition-colors"
-                >
-                  Features
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => scrollToSection('pricing')}
-                  className="text-sm text-text-secondary hover:text-accent-cyan transition-colors"
-                >
-                  Pricing
-                </button>
-              </li>
-              <li>
-                <Link to="/download" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">
-                  Download
+                <Link to="/studio" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">
+                  Vinci Studio Suite
                 </Link>
               </li>
               <li>
-                <button
-                  onClick={() => scrollToSection('faq')}
-                  className="text-sm text-text-secondary hover:text-accent-cyan transition-colors"
-                >
-                  FAQ
-                </button>
+                <Link to="/films" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">
+                  Vinci Films Network
+                </Link>
+              </li>
+              <li>
+                <Link to="/academy" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">
+                  Pop Vinci Academy
+                </Link>
+              </li>
+              <li>
+                <Link to="/ddns" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">
+                  DDNS
+                </Link>
+              </li>
+              <li>
+                <Link to="/gaming" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">
+                  Pop Vinci Gaming
+                </Link>
               </li>
             </ul>
           </div>
@@ -89,6 +84,14 @@ export default function Footer() {
           <div>
             <h4 className="text-sm font-semibold text-text-primary mb-4 uppercase tracking-wider">Company</h4>
             <ul className="space-y-2">
+              <li>
+                <button
+                  onClick={() => scrollToSection('/', 'about')}
+                  className="text-sm text-text-secondary hover:text-accent-cyan transition-colors"
+                >
+                  About
+                </button>
+              </li>
               <li><a href="mailto:vincent@vincistudios.org" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">Contact</a></li>
               <li><a href="mailto:support@vincistudios.org" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">Support</a></li>
               <li><a href="#" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">Terms of Service</a></li>

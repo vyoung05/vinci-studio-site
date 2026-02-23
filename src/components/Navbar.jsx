@@ -7,28 +7,28 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const links = [
-    { to: '/', label: 'Home', hash: false },
-    { to: '/#features', label: 'Features', hash: true },
-    { to: '/#pricing', label: 'Pricing', hash: true },
-    { to: '/download', label: 'Download', hash: false },
+    { to: '/#products', label: 'Products', hash: true },
+    { to: '/studio', label: 'Studio', hash: false },
+    { to: '/films', label: 'Films', hash: false },
+    { to: '/#about', label: 'About', hash: true },
   ];
 
   const isActive = (to) => {
     if (to === '/') return location.pathname === '/';
-    return location.pathname === to;
+    const path = to.split('#')[0] || '/';
+    return location.pathname === path;
   };
 
   const handleNavClick = (link) => {
     setMobileOpen(false);
     if (link.hash) {
       const hashId = link.to.split('#')[1];
-      if (location.pathname === '/') {
-        // Already on home page — scroll to section
+      const basePath = link.to.split('#')[0] || '/';
+      if (location.pathname === basePath) {
         const el = document.getElementById(hashId);
         if (el) el.scrollIntoView({ behavior: 'smooth' });
       } else {
-        // Navigate to home, then scroll after render
-        navigate('/');
+        navigate(basePath);
         setTimeout(() => {
           const el = document.getElementById(hashId);
           if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -47,7 +47,7 @@ export default function Navbar() {
               V
             </div>
             <span className="text-lg font-bold text-text-primary">
-              Vinci <span className="text-accent-cyan">Studio</span>
+              Vinci <span className="text-accent-cyan">Studios</span>
             </span>
           </Link>
 
@@ -58,7 +58,7 @@ export default function Navbar() {
                 <button
                   key={link.to}
                   onClick={() => handleNavClick(link)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-text-secondary hover:text-text-primary hover:bg-white/5`}
+                  className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-text-secondary hover:text-text-primary hover:bg-white/5"
                 >
                   {link.label}
                 </button>
@@ -81,10 +81,10 @@ export default function Navbar() {
           {/* CTA */}
           <div className="hidden md:flex items-center gap-3">
             <Link
-              to="/buy"
+              to="/studio/buy"
               className="px-5 py-2 rounded-lg bg-gradient-to-r from-accent-cyan to-accent-cyan-dim text-bg-primary font-semibold text-sm hover:glow-cyan transition-all duration-300 hover:scale-105"
             >
-              Buy Now — $99
+              Buy Studio — $99
             </Link>
           </div>
 
@@ -107,6 +107,13 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {mobileOpen && (
         <div className="md:hidden glass-strong border-t border-border px-4 py-3 space-y-1">
+          <Link
+            to="/"
+            onClick={() => setMobileOpen(false)}
+            className="block px-4 py-2 rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-white/5"
+          >
+            Home
+          </Link>
           {links.map((link) =>
             link.hash ? (
               <button
@@ -128,11 +135,11 @@ export default function Navbar() {
             )
           )}
           <Link
-            to="/buy"
+            to="/studio/buy"
             onClick={() => setMobileOpen(false)}
             className="block px-4 py-2 rounded-lg text-sm font-semibold text-accent-cyan hover:bg-accent-cyan/10"
           >
-            Buy Now — $99
+            Buy Studio — $99
           </Link>
         </div>
       )}

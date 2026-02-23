@@ -116,8 +116,8 @@ export default function Buy() {
         body: JSON.stringify({
           priceId: product.priceId,
           mode: product.mode,
-          successUrl: `${window.location.origin}/download?success=true&session_id={CHECKOUT_SESSION_ID}`,
-          cancelUrl: `${window.location.origin}/buy?canceled=true`,
+          successUrl: `${window.location.origin}/studio/download?success=true&session_id={CHECKOUT_SESSION_ID}`,
+          cancelUrl: `${window.location.origin}/studio/buy?canceled=true`,
         }),
       });
 

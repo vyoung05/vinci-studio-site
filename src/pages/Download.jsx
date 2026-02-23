@@ -167,7 +167,7 @@ export default function Download() {
 
               <p className="text-xs text-text-muted mt-4">
                 Requires a license key.{' '}
-                <Link to="/buy" className="text-accent-cyan hover:underline">
+                <Link to="/studio/buy" className="text-accent-cyan hover:underline">
                   Buy one here →
                 </Link>
               </p>
@@ -262,7 +262,7 @@ export default function Download() {
                 Purchase Vinci Studio Suite for $99 — one-time payment, lifetime access.
               </p>
               <Link
-                to="/buy"
+                to="/studio/buy"
                 className="inline-flex px-6 py-3 rounded-xl bg-gradient-to-r from-accent-cyan to-accent-cyan-dim text-bg-primary font-bold text-sm hover:glow-cyan-strong transition-all duration-300 hover:scale-105"
               >
                 Buy Now — $99
