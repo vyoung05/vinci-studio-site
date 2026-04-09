@@ -1,6 +1,12 @@
 {
   "outputDirectory": "dist",
-  "rewrites": [
-    { "source": "/((?!api/|vinci-icon.svg|og-image.png|favicon.ico|assets/|downloads/).*)", "destination": "/index.html" }
+  "routes": [
+    { "src": "/vinci-icon.svg", "dest": "/vinci-icon.svg" },
+    { "src": "/og-image.png", "dest": "/og-image.png" },
+    { "src": "/favicon.ico", "dest": "/favicon.ico" },
+    { "src": "/downloads/(.*)", "dest": "/downloads/$1" },
+    { "src": "/assets/(.*)", "dest": "/assets/$1" },
+    { "src": "/googlee2a11cc8605b2852.html", "dest": "/googlee2a11cc8605b2852.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
