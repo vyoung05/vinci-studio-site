@@ -63,19 +63,42 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/academy" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">
+                <a href="https://popvinciacademy.com" target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">
                   Pop Vinci Academy
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/ddns" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">
+                <a href="https://popvinci.com" target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">
+                  Pop Vinci
+                </a>
+              </li>
+              <li>
+                <a href="https://daydeamersnightstreamers.com" target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">
                   DDNS
-                </Link>
+                </a>
+              </li>
+            </ul>
+            <h4 className="text-sm font-semibold text-text-primary mb-4 mt-6 uppercase tracking-wider">The Young Empire</h4>
+            <ul className="space-y-2">
+              <li>
+                <a href="https://saucecaviar.com" target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">
+                  Sauce Caviar
+                </a>
               </li>
               <li>
-                <Link to="/gaming" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">
-                  Pop Vinci Gaming
-                </Link>
+                <a href="https://trapglow.com" target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">
+                  Trap Glow
+                </a>
+              </li>
+              <li>
+                <a href="https://saucewire.com" target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">
+                  Sauce Wire
+                </a>
+              </li>
+              <li>
+                <a href="https://trapfrequency.com" target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-accent-cyan transition-colors">
+                  Trap Frequency
+                </a>
               </li>
             </ul>
           </div>

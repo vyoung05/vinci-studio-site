@@ -27,33 +27,33 @@ const products = [
     icon: '🎓',
     name: 'Pop Vinci Academy',
     desc: 'Learn the business of entertainment. Courses, mentorship, and resources for creators.',
-    tag: 'Coming Soon',
-    tagColor: 'bg-accent-magenta/10 text-accent-magenta border-accent-magenta/20',
-    link: '/academy',
-    linkLabel: 'Learn More →',
-    external: false,
+    tag: 'Live',
+    tagColor: 'bg-green-500/10 text-green-400 border-green-500/20',
+    link: 'https://popvinciacademy.com',
+    linkLabel: 'Visit Site →',
+    external: true,
     glow: false,
   },
   {
     icon: '🎵',
     name: 'Pop Vinci',
     desc: 'Music, content, culture. Artist brand & content vertical for the next wave of entertainment.',
-    tag: 'Coming Soon',
-    tagColor: 'bg-accent-magenta/10 text-accent-magenta border-accent-magenta/20',
-    link: '/popvinci',
-    linkLabel: 'Learn More →',
-    external: false,
+    tag: 'Live',
+    tagColor: 'bg-green-500/10 text-green-400 border-green-500/20',
+    link: 'https://popvinci.com',
+    linkLabel: 'Visit Site →',
+    external: true,
     glow: false,
   },
   {
     icon: '📡',
     name: 'DDNS',
     desc: 'Live streaming entertainment. Real-time content, shows, and interactive experiences.',
-    tag: 'Coming Soon',
-    tagColor: 'bg-accent-magenta/10 text-accent-magenta border-accent-magenta/20',
-    link: '/ddns',
-    linkLabel: 'Learn More →',
-    external: false,
+    tag: 'Live',
+    tagColor: 'bg-green-500/10 text-green-400 border-green-500/20',
+    link: 'https://daydeamersnightstreamers.com',
+    linkLabel: 'Visit Site →',
+    external: true,
     glow: false,
   },
   {
@@ -65,6 +65,50 @@ const products = [
     link: '/gaming',
     linkLabel: 'Learn More →',
     external: false,
+    glow: false,
+  },
+  {
+    icon: '🥂',
+    name: 'Sauce Caviar',
+    desc: 'Digital interactive magazine. Luxury lifestyle, culture, and curated taste — the flagship of The Young Empire.',
+    tag: 'Live',
+    tagColor: 'bg-green-500/10 text-green-400 border-green-500/20',
+    link: 'https://saucecaviar.com',
+    linkLabel: 'Visit Site →',
+    external: true,
+    glow: false,
+  },
+  {
+    icon: '✨',
+    name: 'Trap Glow',
+    desc: 'Music discovery & artist spotlight. Beauty, wellness, and lifestyle through the lens of culture.',
+    tag: 'Live',
+    tagColor: 'bg-green-500/10 text-green-400 border-green-500/20',
+    link: 'https://trapglow.com',
+    linkLabel: 'Visit Site →',
+    external: true,
+    glow: false,
+  },
+  {
+    icon: '⚡',
+    name: 'Sauce Wire',
+    desc: 'Culture & hip-hop news wire. Breaking stories, trends, and digital media coverage.',
+    tag: 'Live',
+    tagColor: 'bg-green-500/10 text-green-400 border-green-500/20',
+    link: 'https://saucewire.com',
+    linkLabel: 'Visit Site →',
+    external: true,
+    glow: false,
+  },
+  {
+    icon: '🎧',
+    name: 'Trap Frequency',
+    desc: 'Music production & beat hub. Audio tools, resources, and a creative platform for producers.',
+    tag: 'Live',
+    tagColor: 'bg-green-500/10 text-green-400 border-green-500/20',
+    link: 'https://trapfrequency.com',
+    linkLabel: 'Visit Site →',
+    external: true,
     glow: false,
   },
 ];
@@ -126,43 +170,62 @@ export default function Home() {
 
           {/* Product Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((product) => (
-              <Link
-                key={product.name}
-                to={product.link}
-                className={`group relative rounded-2xl glass overflow-hidden transition-all duration-300 hover:-translate-y-1 ${
-                  product.glow ? 'glow-cyan' : 'hover:glow-cyan'
-                }`}
-              >
-                {product.glow && (
-                  <div className="h-1 bg-gradient-to-r from-accent-cyan to-accent-magenta" />
-                )}
-                <div className="p-8">
-                  {/* Icon & Tag */}
-                  <div className="flex items-start justify-between mb-5">
-                    <span className="text-4xl">{product.icon}</span>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${product.tagColor}`}>
-                      {product.tag}
+            {products.map((product) => {
+              const cardClass = `group relative rounded-2xl glass overflow-hidden transition-all duration-300 hover:-translate-y-1 ${
+                product.glow ? 'glow-cyan' : 'hover:glow-cyan'
+              }`;
+              const cardContent = (
+                <>
+                  {product.glow && (
+                    <div className="h-1 bg-gradient-to-r from-accent-cyan to-accent-magenta" />
+                  )}
+                  <div className="p-8">
+                    {/* Icon & Tag */}
+                    <div className="flex items-start justify-between mb-5">
+                      <span className="text-4xl">{product.icon}</span>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${product.tagColor}`}>
+                        {product.tag}
+                      </span>
+                    </div>
+
+                    {/* Name */}
+                    <h3 className="text-xl font-bold text-text-primary mb-3 group-hover:text-accent-cyan transition-colors">
+                      {product.name}
+                    </h3>
+
+                    {/* Description */}
+                    <p className="text-sm text-text-secondary leading-relaxed mb-6">
+                      {product.desc}
+                    </p>
+
+                    {/* Link */}
+                    <span className="inline-flex items-center text-sm font-semibold text-accent-cyan group-hover:translate-x-1 transition-transform duration-200">
+                      {product.linkLabel}
                     </span>
                   </div>
+                </>
+              );
 
-                  {/* Name */}
-                  <h3 className="text-xl font-bold text-text-primary mb-3 group-hover:text-accent-cyan transition-colors">
-                    {product.name}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="text-sm text-text-secondary leading-relaxed mb-6">
-                    {product.desc}
-                  </p>
-
-                  {/* Link */}
-                  <span className="inline-flex items-center text-sm font-semibold text-accent-cyan group-hover:translate-x-1 transition-transform duration-200">
-                    {product.linkLabel}
-                  </span>
-                </div>
-              </Link>
-            ))}
+              return product.external ? (
+                <a
+                  key={product.name}
+                  href={product.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cardClass}
+                >
+                  {cardContent}
+                </a>
+              ) : (
+                <Link
+                  key={product.name}
+                  to={product.link}
+                  className={cardClass}
+                >
+                  {cardContent}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -187,7 +250,7 @@ export default function Home() {
             {/* Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8 border-t border-border">
               {[
-                { label: 'Products', value: '6' },
+                { label: 'Products', value: '11' },
                 { label: 'Founded', value: '2026' },
                 { label: 'Location', value: 'Miami' },
                 { label: 'Focus', value: 'Creators' },
